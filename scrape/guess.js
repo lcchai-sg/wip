@@ -25,7 +25,7 @@ const extraction = async (context) => {
         const data = await page.evaluate(() => document.body.innerHTML);
         const $ = cheerio.load(data);
         result.name = $('.product-detail__name').text();
-        result.retail = $('.product-detail__prices').text().replace(/\s+/g, "").trim();
+        result.retail = $('.product-detail__prices').find('.value').first().attr('content');
         result.description = $("#description-1").text().replace(/\s+/g, " ").trim();
         result.gender = entry.match(/women/i) ? 'F' : 'M';
         result.thumbnail = $('.product-detail__image').find('img').attr('src');
@@ -36,7 +36,7 @@ const extraction = async (context) => {
             result.spec.push($(el).text().trim())
         })
         const ref = $('.mt-3').last().text().trim();
-        result.reference = ref.split("#")[1].trim();
+        result.reference = ref ? ref.split("#")[1].trim() : null;
         // result.spec.push(ref);
         await browser.close();
     } catch (error) {
@@ -44,7 +44,7 @@ const extraction = async (context) => {
         console.error('entry :', entry);
         if (error.response) result.code = error.response.status;
         else result.code = 'UNKNOWN ERROR';
-        await browser.close();
+        if (browser) await browser.close();
     }
     return result;
 };
@@ -747,12 +747,13 @@ const indexing = async () => {
     ];
     for (const u of urls) {
         const ex = await extraction({ entry: u, });
-        await channel.publish(
-            'scraper',
-            'scrape.data.raw',
-            Buffer.from(JSON.stringify(ex)),
-            { correlationId: shortid.generate() }
-        );
+        if (ex.reference && ex.spec && ex.spec.length > 0)
+            await channel.publish(
+                'scraper',
+                'scrape.data.raw',
+                Buffer.from(JSON.stringify(ex)),
+                { correlationId: shortid.generate() }
+            );
         await new Promise(r => setTimeout(r, 5000));
     }
     console.log('done.....');
