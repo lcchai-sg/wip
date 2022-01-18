@@ -3,7 +3,8 @@ const { MongoClient } = require('mongodb');
 (async () => {
     try {
         const ddb = {
-            host: "203.118.42.106",
+            // host: "203.118.42.106",
+            host: "127.0.0.1",
             port: 27017,
             user: "synopsis",
             pass: "synopsis",
@@ -15,7 +16,7 @@ const { MongoClient } = require('mongodb');
             port: 27017,
             user: "synopsis",
             pass: "synopsis",
-            name: "synopsis1",
+            name: "synopsis",
         }
 
         const db_exists = (db, col) => {
@@ -28,11 +29,15 @@ const { MongoClient } = require('mongodb');
         const ddb_url = `mongodb://${ddb.user}:${ddb.pass}@${ddb.host}:${ddb.port}/${ddb.name}`;
         const d_conn = await MongoClient.connect(ddb_url, { useUnifiedTopology: true, useNewUrlParser: true, });
         const d_db = d_conn.db(ddb.name);
-        const ldb_url = `mongodb://${ldb.user}:${ldb.pass}@${ldb.host}:${ldb.port}/${ldb.name}`;
-        const l_conn = await MongoClient.connect(ldb_url, { useUnifiedTopology: true, useNewUrlParser: true, });
-        const l_db = l_conn.db(ldb.name);
+        // const ldb_url = `mongodb://${ldb.user}:${ldb.pass}@${ldb.host}:${ldb.port}/${ldb.name}`;
+        // const l_conn = await MongoClient.connect(ldb_url, { useUnifiedTopology: true, useNewUrlParser: true, });
+        // const l_db = l_conn.db(ldb.name);
+        const cdb_url = `mongodb+srv://f2fnoodle:Pa55w0rd@cluster0.wqk0e.mongodb.net/synopsis?retryWrites=true&w=majority`;
+        const c_conn = await MongoClient.connect(cdb_url, { useUnifiedTopology: true, useNewUrlParser: true, });
+        const l_db = c_conn.db(ldb.name);
         let d_col = await d_db.listCollections().toArray(); d_col = d_col.sort((a, b) => a.name > b.name ? 1 : -1);
         let l_col = await l_db.listCollections().toArray(); l_col = l_col.sort((a, b) => a.name > b.name ? 1 : -1);
+        // let l_col = await l_db.listCollections().toArray(); l_col = l_col.sort((a, b) => a.name > b.name ? 1 : -1);
 
         const limit = 10000;
         for (const c of d_col) {
