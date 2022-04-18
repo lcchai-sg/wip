@@ -72,7 +72,7 @@ const cfg = require('../cfg');
             console.log('******************** NO BRAND FOUND ********************');
             console.log(u[i]);
         }
-        await new Promise(r => setTimeout(r, 3000))
+        await new Promise(r => setTimeout(r, 30000))
     }
     process.exit(0)
 })();

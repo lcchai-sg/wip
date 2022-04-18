@@ -1,5 +1,5 @@
 const u = [
-    "https://www.garmin.com/en-US/p/667002/pn/010-02172-51",
+    "https://www.citizenwatch.com/us/en/product/CA4210-24E.html",
 ];
 
 module.exports = u;
